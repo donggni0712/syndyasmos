@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sleep-app
+spec:
+  selector:
+    matchLabels:
+      run: sleep-app
+  replicas: 2
+
+  template:
+    metadata:
+      labels:
+        run: sleep-app
+    spec:
+      containers:
+        - name: sleep-app
+          image: jayoh712/sleep-app
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              cpu: 500m
+            requests:
+              cpu: 200m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sleep-app
+  labels:
+    run: sleep-app
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 3000
+      nodePort: 30712
+  selector:
+    run: sleep-app

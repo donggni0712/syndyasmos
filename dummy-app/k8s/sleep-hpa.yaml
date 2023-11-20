@@ -1,0 +1,16 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: sleep-app
+spec:
+  maxReplicas: 6
+  minReplicas: 2
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: sleep-app
+  targetCPUUtilizationPercentage: 50
+status:
+  currentCPUUtilizationPercentage: 0
+  currentReplicas: 2
+  desiredReplicas: 2
