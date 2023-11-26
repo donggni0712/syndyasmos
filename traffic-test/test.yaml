@@ -1,0 +1,11 @@
+config:
+  target: "http://52.79.168.90" # 테스트 대상 서버의 URL
+  phases:
+    - duration: 30 # 테스트 지속 시간 (초)
+      arrivalRate: 50 # 초당 새 사용자 수 (RPS)
+
+scenarios:
+  - flow:
+      - get:
+          url: "/sleep" # 테스트할 엔드포인트
+          timeout: 60000
