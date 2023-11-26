@@ -1,0 +1,59 @@
+resource "aws_instance" "master-node" {
+  ami           = "ami-0c9c942bd7bf113a2"
+  instance_type = "t2.micro"
+  subnet_id     = aws_subnet.k8s_subnet.id
+  vpc_security_group_ids = [aws_security_group.k8s_sg.id]
+  key_name      = "my-k8s-test"
+  availability_zone = "ap-northeast-2a"
+
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo apt-get update
+              sudo apt-get install -y apt-transport-https curl
+              curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+              echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+              sudo apt-get update
+              sudo apt-get install -y kubelet kubeadm kubectl
+              sudo apt-mark hold kubelet kubeadm kubectl
+              mkdir -p $HOME/.kube
+              sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+              sudo chown $(id -u):$(id -g) $HOME/.kube/config
+              sudo kubeadm init --ignore-preflight-errors=all
+              EOF
+
+
+
+  tags = {
+    Name = "MasterNode"
+  }
+}
+
+resource "aws_instance" "worker-node" {
+  count         = 2
+  ami           = "ami-0c9c942bd7bf113a2"
+  instance_type = "t2.micro"
+  subnet_id     = aws_subnet.k8s_subnet.id
+  vpc_security_group_ids = [aws_security_group.k8s_sg.id]
+  key_name      = "my-k8s-test"
+  availability_zone = "ap-northeast-2a"
+
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo apt-get update
+              sudo apt-get install -y apt-transport-https curl
+              curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+              echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+              sudo apt-get update
+              sudo apt-get install -y kubelet kubeadm kubectl
+              sudo apt-mark hold kubelet kubeadm kubectl
+              mkdir -p $HOME/.kube
+              sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+              sudo chown $(id -u):$(id -g) $HOME/.kube/config
+              sudo kubeadm init --ignore-preflight-errors=all
+              EOF
+
+
+  tags = {
+    Name = "WorkerNode-${count.index + 1}"
+  }
+}
