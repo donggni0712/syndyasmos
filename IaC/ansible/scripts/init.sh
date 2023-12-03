@@ -31,6 +31,8 @@ echo "br_netfilter" | sudo tee /etc/modules-load.d/modules.conf
 # 설정 적용
 sudo sysctl --system
 
+sudo kubeadm init
+
 # key 사용. 권한 설정
 mkdir -p $HOME/.kube
 
